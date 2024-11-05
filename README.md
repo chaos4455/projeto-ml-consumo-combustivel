@@ -27,8 +27,6 @@ Este projeto visa prever o consumo de combustível de veículos com base em dife
 
 Este documento combina a documentação de todos os arquivos `.py` e `.md` do projeto.
 
-![Cursor_nKRsABIowS](https://github.com/user-attachments/assets/f6b6bf92-b2e2-484a-9000-ef5b37717f04)
-
 ![Cursor_P16CMPLNGn](https://github.com/user-attachments/assets/11863853-768b-4117-8e2f-efe9ce141b97)
 
 ![Cursor_r1sjgILvr4](https://github.com/user-attachments/assets/42658dc4-1e92-4b63-adab-a8a34eb6d369)
