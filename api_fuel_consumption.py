@@ -16,6 +16,7 @@ import numpy as np
 from collections import deque
 import threading
 import statistics
+import random  # Adicione no topo do arquivo
 
 # Inicialização
 console = Console()
@@ -153,43 +154,57 @@ async def predict_single(request: PredictionRequest):
         metrics.errors += 1
         raise HTTPException(status_code=500, detail=str(e))
 
+# Adicione estas constantes/configurações na sua API
+FUEL_PRICES = {
+    "diesel": 6.25  # Preço atual do diesel
+}
+
+# Endpoint para preços dos combustíveis
+@app.get("/fuel_prices")
+async def get_fuel_prices():
+    return {
+        "diesel": 6.25,  # Preço fixo do diesel para exemplo
+        "timestamp": datetime.now().isoformat()
+    }
+
+# Adicione esta constante no início do arquivo, junto com as outras configurações
+VEHICLE_TYPE_MAPPING = {
+    'carro': 0,
+    'moto': 1,
+    'caminhão': 2
+}
+
+# Ajuste o endpoint de previsão em lote
 @app.post("/predict/batch")
 async def predict_batch(request: BatchPredictionRequest):
-    start_time = time.time()
-    metrics.total_requests += 1
-    
     try:
-        results = []
+        predictions = []
         for pred_request in request.predictions:
-            consumo_medio = {
-                'carro': 12,
-                'moto': 25,
-                'caminhão': 3.5
-            }
+            velocidade = random.uniform(80, 100)
+            carga = random.uniform(20000, 30000)
+            temperatura = random.uniform(20, 30)
             
-            if pred_request.vehicle_type not in consumo_medio:
-                raise HTTPException(status_code=400, detail=f"Tipo de veículo inválido: {pred_request.vehicle_type}")
+            X = np.array([[
+                2,  # tipo caminhão
+                pred_request.distance,
+                velocidade,
+                carga,
+                temperatura
+            ]])
             
-            consumo = pred_request.distance / consumo_medio[pred_request.vehicle_type]
+            consumo_base = float(model.predict(X)[0])
+            variacao = random.uniform(0.95, 1.05)
+            consumo_final = consumo_base * variacao
             
-            results.append({
+            predictions.append({
                 "vehicle_type": pred_request.vehicle_type,
                 "distance": pred_request.distance,
-                "predicted_consumption": consumo,
-                "units": "litros"
-            })
-            
-            metrics.last_predictions.append({
-                'vehicle_type': pred_request.vehicle_type,
-                'distance': pred_request.distance,
-                'consumption': consumo
+                "predicted_consumption": round(consumo_final, 2)
             })
         
-        metrics.response_times.append(time.time() - start_time)
-        return {"predictions": results}
-    
+        return {"predictions": predictions}
     except Exception as e:
-        metrics.errors += 1
+        print(f"Erro na previsão: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))
 
 @app.get("/metrics")
@@ -201,6 +216,62 @@ async def get_metrics():
         "avg_response_time": statistics.mean(metrics.response_times) if metrics.response_times else 0,
         "uptime": str(datetime.now() - metrics.start_time)
     }
+
+# Adicione estas constantes no início do arquivo
+ROTAS = {
+    'curitiba': {'distancia': 428, 'via': 'BR-376'},
+    'saopaulo': {'distancia': 674, 'via': 'BR-376/BR-116'},
+    'guarapuava': {'distancia': 317, 'via': 'BR-466'},
+    'londrina': {'distancia': 115, 'via': 'BR-376'},
+    'cascavel': {'distancia': 286, 'via': 'BR-376/BR-277'}
+}
+
+# Adicione este novo endpoint
+@app.get("/routes/consumption")
+async def get_routes_consumption():
+    metrics.total_requests += 1
+    start_time = time.time()
+    
+    try:
+        routes_consumption = []
+        for route, info in ROTAS.items():
+            # Adicionar variação na velocidade para cada rota
+            velocidade = random.uniform(80, 100)  # Velocidade entre 80-100 km/h
+            carga = random.uniform(20000, 30000)  # Peso da carga em kg
+            temperatura = random.uniform(20, 30)  # Temperatura ambiente
+            
+            # Preparar dados para o modelo com todas as 5 features esperadas
+            X = np.array([[
+                2,  # tipo caminhão (usando caminhão como padrão)
+                info['distancia'],
+                velocidade,
+                carga,
+                temperatura
+            ]])
+            
+            # Fazer previsão usando o modelo
+            consumo_base = float(model.predict(X)[0])
+            
+            # Adicionar pequena variação aleatória (±5%)
+            variacao = random.uniform(0.95, 1.05)
+            consumo_final = consumo_base * variacao
+            
+            routes_consumption.append({
+                "route": route,
+                "consumption": round(consumo_final, 2),
+                "distance": info['distancia'],
+                "via": info['via']
+            })
+        
+        # Atualizar métricas
+        metrics.response_times.append(time.time() - start_time)
+        
+        return routes_consumption
+    
+    except Exception as e:
+        metrics.errors += 1
+        print(f"Erro ao calcular consumo das rotas: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
 
 if __name__ == "__main__":
     console.print("[bold green]🚀 Iniciando API...[/]")

@@ -1,6 +1,13 @@
-# Predição de Consumo de Combustível - Por Elias Andrade - v0.003
+# Predição de Consumo de Combustível - Por Elias Andrade - v0.004
 
 Este projeto utiliza aprendizado de máquina para prever o consumo de combustível.  Sou Elias Andrade, e desenvolvi este projeto como uma demonstração de minhas habilidades em IA e Machine Learning.
+
+## Documentação
+
+* [Arquitetura do Modelo](model_architecture.md)
+* [Arquitetura da Rede](network_architecture.md)
+* [Arquitetura do Projeto](architecture.md)
+
 
 ## Contato
 
@@ -10,7 +17,7 @@ Este projeto utiliza aprendizado de máquina para prever o consumo de combustív
 
 ## Descrição do Projeto
 
-Este projeto visa prever o consumo de combustível de veículos com base em diferentes parâmetros, utilizando técnicas de aprendizado de máquina.  O modelo foi treinado com um dataset sintético, gerado e normalizado para otimizar o desempenho do algoritmo.  A versão atual (v0.003) inclui melhorias na documentação, na clareza do código e instruções para configurar ações do GitHub, Docker, Terraform e Kubernetes.
+Este projeto visa prever o consumo de combustível de veículos com base em diferentes parâmetros, utilizando técnicas de aprendizado de máquina.  O modelo foi treinado com um dataset sintético, gerado e normalizado para otimizar o desempenho do algoritmo.  A versão atual (v0.004) inclui melhorias na documentação, na clareza do código e instruções para configurar ações do GitHub, Docker, Terraform e Kubernetes.
 
 # Documentação Combinada do Projeto de Previsão de Consumo de Combustível
 
@@ -462,7 +469,8 @@ O script `predict_consumption.py` utiliza o modelo treinado para gerar previsõe
 * `README.md`: Este arquivo.
 * `combined_documentation.md`: Documentação combinada.
 * `model_architecture.md`: Arquitetura do modelo.
-* `api_documentation.md`: Documentação da API
+* `network_architecture.md`: Arquitetura da rede.
+* `architecture.md`: Arquitetura do projeto.
 
 
 ## Como Executar
@@ -531,3 +539,11 @@ As configurações para Terraform e Kubernetes são mais complexas e dependem da
 ## API Documentation
 
 For detailed API documentation, please refer to: [api_documentation.md](api_documentation.md)
+
+## Histórico de Versões
+
+### v0004 (05/11/2024 16:48 - Elias Andrade)
+
+* 📝 Melhorias na documentação.
+* 🐛 Correções de bugs.
+* ✨ Novas funcionalidades. (Detalhes a serem adicionados)

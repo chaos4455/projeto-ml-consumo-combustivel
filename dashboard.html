@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard de Consumo de Combustível</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        dark: {
+                            100: '#1a1a1a',
+                            200: '#2d2d2d',
+                            300: '#404040',
+                            400: '#525252',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .updating {
+            animation: pulse 0.3s ease-in-out;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.02); }
+            100% { transform: scale(1); }
+        }
+
+        .transition-all {
+            transition: all 0.3s ease-in-out;
+        }
+
+        /* Efeito de hover nos cards */
+        .card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+    </style>
+</head>
+<body class="bg-gray-100 dark:bg-dark-100 transition-colors duration-200">
+    <div class="fixed top-4 right-4">
+        <button id="theme-toggle" class="p-2 rounded-lg bg-gray-200 dark:bg-dark-200 text-gray-800 dark:text-gray-200">
+            <svg id="theme-toggle-dark-icon" class="hidden w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                <path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path>
+            </svg>
+            <svg id="theme-toggle-light-icon" class="hidden w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                <path d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z"></path>
+            </svg>
+        </button>
+    </div>
+
+    <div class="container mx-auto px-4 py-8">
+        <h1 class="text-3xl font-bold text-center mb-8 text-gray-800 dark:text-gray-100">
+            Dashboard de Previsão de Consumo
+        </h1>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <!-- Card Carro -->
+            <div class="bg-white dark:bg-dark-200 rounded-lg shadow-lg p-6 transition-colors duration-200">
+                <div class="flex items-center justify-between mb-4">
+                    <h2 class="text-xl font-semibold text-gray-800 dark:text-gray-100">Carro</h2>
+                    <svg class="w-8 h-8 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path d="M5 10l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                </div>
+                <div class="text-3xl font-bold text-blue-600 dark:text-blue-400 mb-2" id="carro-consumo">--</div>
+                <div class="text-sm text-gray-600 dark:text-gray-400">Distância: <span id="carro-distancia">--</span> km</div>
+            </div>
+
+            <!-- Card Moto -->
+            <div class="bg-white dark:bg-dark-200 rounded-lg shadow-lg p-6 transition-colors duration-200">
+                <div class="flex items-center justify-between mb-4">
+                    <h2 class="text-xl font-semibold text-gray-800 dark:text-gray-100">Moto</h2>
+                    <svg class="w-8 h-8 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path d="M9 17a2 2 0 11-4 0 2 2 0 014 0zM19 17a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                    </svg>
+                </div>
+                <div class="text-3xl font-bold text-green-600 dark:text-green-400 mb-2" id="moto-consumo">--</div>
+                <div class="text-sm text-gray-600 dark:text-gray-400">Distância: <span id="moto-distancia">--</span> km</div>
+            </div>
+
+            <!-- Card Caminhão - Ajustado ID -->
+            <div class="bg-white dark:bg-dark-200 rounded-lg shadow-lg p-6 transition-colors duration-200">
+                <div class="flex items-center justify-between mb-4">
+                    <h2 class="text-xl font-semibold text-gray-800 dark:text-gray-100">Caminhão</h2>
+                    <svg class="w-8 h-8 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path d="M13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10a1 1 0 001 1h1m8-1a1 1 0 01-1 1H9m4-1V8a1 1 0 011-1h2.586a1 1 0 01.707.293l3.414 3.414a1 1 0 01.293.707V16a1 1 0 01-1 1h-1m-6-1a1 1 0 001 1h1M5 17a2 2 0 104 0m-4 0a2 2 0 114 0m6 0a2 2 0 104 0m-4 0a2 2 0 114 0"></path>
+                    </svg>
+                </div>
+                <div class="text-3xl font-bold text-red-600 dark:text-red-400 mb-2" id="caminhão-consumo">--</div>
+                <div class="text-sm text-gray-600 dark:text-gray-400">Distância: <span id="caminhão-distancia">--</span> km</div>
+            </div>
+
+            <!-- Card Métricas - Ajustado para corresponder à API -->
+            <div class="bg-white dark:bg-dark-200 rounded-lg shadow-lg p-6 transition-colors duration-200">
+                <div class="flex items-center justify-between mb-4">
+                    <h2 class="text-xl font-semibold text-gray-800 dark:text-gray-100">Métricas API</h2>
+                    <svg class="w-8 h-8 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                    </svg>
+                </div>
+                <div class="space-y-2">
+                    <div class="text-sm text-gray-600 dark:text-gray-400">Total Requisições: <span id="total-requests" class="font-semibold dark:text-gray-200">--</span></div>
+                    <div class="text-sm text-gray-600 dark:text-gray-400">Tempo Médio: <span id="avg-response-time" class="font-semibold dark:text-gray-200">--</span>s</div>
+                    <div class="text-sm text-gray-600 dark:text-gray-400">Erros: <span id="errors" class="font-semibold dark:text-gray-200">--</span></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="mt-8">
+        <h2 class="text-2xl font-bold text-center mb-6 text-gray-800 dark:text-gray-100">
+            Rotas a partir de Maringá
+        </h2>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <!-- Curitiba -->
+            <div class="bg-white dark:bg-dark-200 rounded-lg shadow-lg p-6 transition-all card">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-xl font-semibold text-gray-800 dark:text-gray-100">Maringá → Curitiba</h3>
+                    <span class="text-sm text-gray-500 dark:text-gray-400">428 km</span>
+                </div>
+                <div class="space-y-2">
+                    <div class="text-3xl font-bold text-indigo-600 dark:text-indigo-400" id="consumo-curitiba">--</div>
+                    <div class="text-sm text-gray-600 dark:text-gray-400">Consumo estimado de combustível</div>
+                    <div class="mt-4 space-y-1">
+                        <div class="text-sm text-gray-600 dark:text-gray-400">
+                            Ida: <span id="custo-ida-curitiba" class="font-semibold dark:text-gray-200">--</span>
+                        </div>
+                        <div class="text-sm text-gray-600 dark:text-gray-400">
+                            Volta: <span id="custo-volta-curitiba" class="font-semibold dark:text-gray-200">--</span>
+                        </div>
+                        <div class="text-sm font-medium text-green-600 dark:text-green-400">
+                            Total: <span id="custo-total-curitiba" class="font-bold">--</span>
+                        </div>
+                    </div>
+                    <div class="mt-2 text-xs text-gray-500 dark:text-gray-400">Via BR-376</div>
+                </div>
+            </div>
+
+            <!-- São Paulo -->
+            <div class="bg-white dark:bg-dark-200 rounded-lg shadow-lg p-6 transition-colors duration-200">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-xl font-semibold text-gray-800 dark:text-gray-100">Maringá → São Paulo</h3>
+                    <span class="text-sm text-gray-500 dark:text-gray-400">674 km</span>
+                </div>
+                <div class="space-y-2">
+                    <div class="text-3xl font-bold text-indigo-600 dark:text-indigo-400" id="consumo-saopaulo">--</div>
+                    <div class="text-sm text-gray-600 dark:text-gray-400">Consumo estimado de combustível</div>
+                    <div class="mt-4 space-y-1">
+                        <div class="text-sm text-gray-600 dark:text-gray-400">
+                            Ida: <span id="custo-ida-saopaulo" class="font-semibold dark:text-gray-200">--</span>
+                        </div>
+                        <div class="text-sm text-gray-600 dark:text-gray-400">
+                            Volta: <span id="custo-volta-saopaulo" class="font-semibold dark:text-gray-200">--</span>
+                        </div>
+                        <div class="text-sm font-medium text-green-600 dark:text-green-400">
+                            Total: <span id="custo-total-saopaulo" class="font-bold">--</span>
+                        </div>
+                    </div>
+                    <div class="mt-2 text-xs text-gray-500 dark:text-gray-400">Via BR-376/BR-116</div>
+                </div>
+            </div>
+
+            <!-- Guarapuava -->
+            <div class="bg-white dark:bg-dark-200 rounded-lg shadow-lg p-6 transition-colors duration-200">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-xl font-semibold text-gray-800 dark:text-gray-100">Maringá → Guarapuava</h3>
+                    <span class="text-sm text-gray-500 dark:text-gray-400">317 km</span>
+                </div>
+                <div class="space-y-2">
+                    <div class="text-3xl font-bold text-indigo-600 dark:text-indigo-400" id="consumo-guarapuava">--</div>
+                    <div class="text-sm text-gray-600 dark:text-gray-400">Consumo estimado de combustível</div>
+                    <div class="mt-4 space-y-1">
+                        <div class="text-sm text-gray-600 dark:text-gray-400">
+                            Ida: <span id="custo-ida-guarapuava" class="font-semibold dark:text-gray-200">--</span>
+                        </div>
+                        <div class="text-sm text-gray-600 dark:text-gray-400">
+                            Volta: <span id="custo-volta-guarapuava" class="font-semibold dark:text-gray-200">--</span>
+                        </div>
+                        <div class="text-sm font-medium text-green-600 dark:text-green-400">
+                            Total: <span id="custo-total-guarapuava" class="font-bold">--</span>
+                        </div>
+                    </div>
+                    <div class="mt-2 text-xs text-gray-500 dark:text-gray-400">Via BR-466</div>
+                </div>
+            </div>
+
+            <!-- Londrina -->
+            <div class="bg-white dark:bg-dark-200 rounded-lg shadow-lg p-6 transition-colors duration-200">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-xl font-semibold text-gray-800 dark:text-gray-100">Maringá → Londrina</h3>
+                    <span class="text-sm text-gray-500 dark:text-gray-400">115 km</span>
+                </div>
+                <div class="space-y-2">
+                    <div class="text-3xl font-bold text-indigo-600 dark:text-indigo-400" id="consumo-londrina">--</div>
+                    <div class="text-sm text-gray-600 dark:text-gray-400">Consumo estimado de combustível</div>
+                    <div class="mt-4 space-y-1">
+                        <div class="text-sm text-gray-600 dark:text-gray-400">
+                            Ida: <span id="custo-ida-londrina" class="font-semibold dark:text-gray-200">--</span>
+                        </div>
+                        <div class="text-sm text-gray-600 dark:text-gray-400">
+                            Volta: <span id="custo-volta-londrina" class="font-semibold dark:text-gray-200">--</span>
+                        </div>
+                        <div class="text-sm font-medium text-green-600 dark:text-green-400">
+                            Total: <span id="custo-total-londrina" class="font-bold">--</span>
+                        </div>
+                    </div>
+                    <div class="mt-2 text-xs text-gray-500 dark:text-gray-400">Via BR-376</div>
+                </div>
+            </div>
+
+            <!-- Cascavel -->
+            <div class="bg-white dark:bg-dark-200 rounded-lg shadow-lg p-6 transition-colors duration-200">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-xl font-semibold text-gray-800 dark:text-gray-100">Maringá → Cascavel</h3>
+                    <span class="text-sm text-gray-500 dark:text-gray-400">286 km</span>
+                </div>
+                <div class="space-y-2">
+                    <div class="text-3xl font-bold text-indigo-600 dark:text-indigo-400" id="consumo-cascavel">--</div>
+                    <div class="text-sm text-gray-600 dark:text-gray-400">Consumo estimado de combustível</div>
+                    <div class="mt-4 space-y-1">
+                        <div class="text-sm text-gray-600 dark:text-gray-400">
+                            Ida: <span id="custo-ida-cascavel" class="font-semibold dark:text-gray-200">--</span>
+                        </div>
+                        <div class="text-sm text-gray-600 dark:text-gray-400">
+                            Volta: <span id="custo-volta-cascavel" class="font-semibold dark:text-gray-200">--</span>
+                        </div>
+                        <div class="text-sm font-medium text-green-600 dark:text-green-400">
+                            Total: <span id="custo-total-cascavel" class="font-bold">--</span>
+                        </div>
+                    </div>
+                    <div class="mt-2 text-xs text-gray-500 dark:text-gray-400">Via BR-376/BR-277</div>
+                </div>
+            </div>
+
+            <!-- Resumo -->
+            <div class="bg-white dark:bg-dark-200 rounded-lg shadow-lg p-6 transition-colors duration-200">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-xl font-semibold text-gray-800 dark:text-gray-100">Resumo das Rotas</h3>
+                    <svg class="w-6 h-6 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                    </svg>
+                </div>
+                <div class="space-y-2">
+                    <div class="text-sm text-gray-600 dark:text-gray-400">Maior consumo: <span id="maior-consumo" class="font-semibold dark:text-gray-200">--</span></div>
+                    <div class="text-sm text-gray-600 dark:text-gray-400">Menor consumo: <span id="menor-consumo" class="font-semibold dark:text-gray-200">--</span></div>
+                    <div class="text-sm text-gray-600 dark:text-gray-400">Média: <span id="media-consumo" class="font-semibold dark:text-gray-200">--</span></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = 'http://localhost:8000';
+
+        async function fazerPrevisao() {
+            try {
+                // Gerar distâncias aleatórias entre 50 e 500 km
+                const distancias = {
+                    carro: Math.floor(Math.random() * 450) + 50,
+                    moto: Math.floor(Math.random() * 450) + 50,
+                    'caminhão': Math.floor(Math.random() * 450) + 50
+                };
+
+                // Fazer previsões para cada tipo de veículo
+                const predictions = await axios.post(`${API_URL}/predict/batch`, {
+                    predictions: [
+                        { vehicle_type: 'carro', distance: distancias.carro },
+                        { vehicle_type: 'moto', distance: distancias.moto },
+                        { vehicle_type: 'caminhão', distance: distancias['caminhão'] }
+                    ]
+                });
+
+                // Atualizar os cards com os resultados
+                predictions.data.predictions.forEach(pred => {
+                    const tipo = pred.vehicle_type;
+                    document.getElementById(`${tipo}-consumo`).textContent = 
+                        `${pred.predicted_consumption.toFixed(2)}L`;
+                    document.getElementById(`${tipo}-distancia`).textContent = 
+                        pred.distance;
+                });
+
+                // Buscar métricas da API
+                const metricas = await axios.get(`${API_URL}/metrics`);
+                document.getElementById('total-requests').textContent = 
+                    metricas.data.total_requests;
+                document.getElementById('avg-response-time').textContent = 
+                    metricas.data.avg_response_time.toFixed(3);
+                document.getElementById('errors').textContent = 
+                    metricas.data.errors;
+
+            } catch (error) {
+                console.error('Erro ao fazer previsões:', error);
+            }
+        }
+
+        // Fazer primeira previsão imediatamente
+        fazerPrevisao();
+
+        // Atualizar a cada 5 segundos
+        setInterval(fazerPrevisao, 5000);
+    </script>
+
+    <script>
+        const ROTAS = {
+            curitiba: { distancia: 428, via: 'BR-376' },
+            saopaulo: { distancia: 674, via: 'BR-376/BR-116' },
+            guarapuava: { distancia: 317, via: 'BR-466' },
+            londrina: { distancia: 115, via: 'BR-376' },
+            cascavel: { distancia: 286, via: 'BR-376/BR-277' }
+        };
+
+        // Função para atualizar todas as rotas
+        async function calcularRotas() {
+            try {
+                // Buscar preço do diesel
+                const precosResponse = await axios.get(`${API_URL}/fuel_prices`);
+                const precoDiesel = precosResponse.data.diesel;
+
+                // Fazer uma única requisição para todas as rotas
+                const predictions = await axios.get(`${API_URL}/routes/consumption`);
+                
+                // Atualizar cada rota com os dados da API
+                Object.entries(ROTAS).forEach(([cidade, info]) => {
+                    const rotaData = predictions.data.find(p => p.route.toLowerCase() === cidade.toLowerCase());
+                    if (!rotaData) return;
+
+                    const consumo = rotaData.consumption;
+                    
+                    // Atualizar consumo
+                    const consumoElement = document.getElementById(`consumo-${cidade}`);
+                    if (consumoElement) {
+                        const oldValue = parseFloat(consumoElement.textContent) || 0;
+                        animateValue(consumoElement, oldValue, consumo, 'L');
+                    }
+                    
+                    // Calcular e atualizar custos
+                    const custoIda = consumo * precoDiesel;
+                    const custoVolta = consumo * precoDiesel;
+                    const custoTotal = custoIda + custoVolta;
+                    
+                    // Atualizar elementos de custo
+                    const idaElement = document.getElementById(`custo-ida-${cidade}`);
+                    const voltaElement = document.getElementById(`custo-volta-${cidade}`);
+                    const totalElement = document.getElementById(`custo-total-${cidade}`);
+                    
+                    if (idaElement) animateValue(idaElement, parseFloat(idaElement.textContent.replace('R$ ', '')) || 0, custoIda, 'R$');
+                    if (voltaElement) animateValue(voltaElement, parseFloat(voltaElement.textContent.replace('R$ ', '')) || 0, custoVolta, 'R$');
+                    if (totalElement) animateValue(totalElement, parseFloat(totalElement.textContent.replace('R$ ', '')) || 0, custoTotal, 'R$');
+                });
+
+                // Atualizar resumo estatístico
+                const consumos = predictions.data.map(p => p.consumption);
+                const maiorElement = document.getElementById('maior-consumo');
+                const menorElement = document.getElementById('menor-consumo');
+                const mediaElement = document.getElementById('media-consumo');
+                
+                if (maiorElement) animateValue(maiorElement, parseFloat(maiorElement.textContent) || 0, Math.max(...consumos), 'L');
+                if (menorElement) animateValue(menorElement, parseFloat(menorElement.textContent) || 0, Math.min(...consumos), 'L');
+                if (mediaElement) animateValue(mediaElement, parseFloat(mediaElement.textContent) || 0, consumos.reduce((a, b) => a + b, 0) / consumos.length, 'L');
+
+            } catch (error) {
+                console.error('Erro ao calcular rotas:', error);
+            }
+        }
+
+        // Função para animar valores
+        function animateValue(element, start, end, unit) {
+            const duration = 500;
+            const startTime = performance.now();
+
+            function update(currentTime) {
+                const elapsed = currentTime - startTime;
+                const progress = Math.min(elapsed / duration, 1);
+
+                const current = start + (end - start) * progress;
+                element.textContent = unit === 'R$' ? 
+                    `R$ ${current.toFixed(2)}` : 
+                    `${current.toFixed(2)}${unit}`;
+
+                if (progress < 1) {
+                    requestAnimationFrame(update);
+                }
+            }
+
+            requestAnimationFrame(update);
+        }
+
+        // Iniciar atualizações
+        function startUpdates() {
+            // Primeira execução
+            calcularRotas();
+
+            // Atualizar a cada 5 segundos
+            setInterval(() => {
+                calcularRotas();
+                // Efeito visual de atualização
+                document.querySelectorAll('.card').forEach(card => {
+                    card.classList.add('updating');
+                    setTimeout(() => card.classList.remove('updating'), 300);
+                });
+            }, 5000);
+        }
+
+        // Iniciar quando a página carregar
+        document.addEventListener('DOMContentLoaded', startUpdates);
+    </script>
+
+    <script>
+        // Função para alternar o tema
+        function toggleTheme() {
+            if (localStorage.theme === 'dark' || 
+                (!('theme' in localStorage) && 
+                window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                document.documentElement.classList.add('dark');
+                document.getElementById('theme-toggle-light-icon').classList.remove('hidden');
+                document.getElementById('theme-toggle-dark-icon').classList.add('hidden');
+            } else {
+                document.documentElement.classList.remove('dark');
+                document.getElementById('theme-toggle-light-icon').classList.add('hidden');
+                document.getElementById('theme-toggle-dark-icon').classList.remove('hidden');
+            }
+        }
+
+        // Inicializar tema
+        toggleTheme();
+
+        // Adicionar evento ao botão
+        document.getElementById('theme-toggle').addEventListener('click', () => {
+            if (localStorage.theme === 'dark') {
+                localStorage.theme = 'light';
+            } else {
+                localStorage.theme = 'dark';
+            }
+            toggleTheme();
+        });
+
+        // Verificar preferência do sistema
+        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', toggleTheme);
+    </script>
+</body>
+</html>

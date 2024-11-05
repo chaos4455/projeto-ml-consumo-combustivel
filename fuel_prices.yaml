@@ -1,12 +1,16 @@
 fuel_prices:
-  last_update: "2024-03-25"
+  last_update: "2024-03-28" # Atualizado
   prices:
     gasoline:
-      average_price: 5.83
+      average_price: 6.07 # Atualizado
       unit: "R$/litro"
       type: "Gasolina Comum"
+    gasoline_aditivada: #Adicionado
+      average_price: 6.26 # Atualizado
+      unit: "R$/litro"
+      type: "Gasolina Aditivada"
     ethanol:
-      average_price: 3.99
+      average_price: 3.98 # Atualizado
       unit: "R$/litro"
       type: "Etanol Hidratado"
     diesel:
@@ -17,3 +21,80 @@ fuel_prices:
     source: "ANP - Agência Nacional do Petróleo"
     region: "Brasil"
     price_type: "Preço médio ao consumidor"
+  state_prices: #Adicionado
+    Acre:
+      gasoline: 7.22
+      gasoline_aditivada: 7.32
+      ethanol: 5.21
+    Alagoas:
+      gasoline: 6.18
+      gasoline_aditivada: 6.35
+      ethanol: 3.98
+    Amapá:
+      gasoline: 5.88
+      gasoline_aditivada: 6.17
+      ethanol: 3.67
+    Amazonas:
+      gasoline: 6.91
+      gasoline_aditivada: 6.91
+      ethanol: 4.24
+    Bahia:
+      gasoline: 6.16
+      gasoline_aditivada: 6.32
+      ethanol: 3.90
+    Ceará:
+      gasoline: 5.93
+      gasoline_aditivada: 6.12
+      ethanol: 3.75
+    Distrito_Federal:
+      gasoline: 6.06
+      gasoline_aditivada: 6.07
+      ethanol: 3.85
+    Espírito_Santo:
+      gasoline: 6.13
+      gasoline_aditivada: 6.25
+      ethanol: 3.92
+    Goiás:
+      gasoline: 6.22
+      gasoline_aditivada: 6.38
+      ethanol: 3.95
+    Maranhão:
+      gasoline: 5.85
+      gasoline_aditivada: 5.92
+      ethanol: 3.64
+    Mato_Grosso:
+      gasoline: 6.06
+      gasoline_aditivada: 6.26
+      ethanol: 4.02
+    Mato_Grosso_do_Sul:
+      gasoline: 5.91
+      gasoline_aditivada: 6.10
+      ethanol: 3.78
+    Minas_Gerais:
+      gasoline: 6.13
+      gasoline_aditivada: 6.33
+      ethanol: 3.89
+    Pará:
+      gasoline: 6.09
+      gasoline_aditivada: 6.40
+      ethanol: 4.05
+    Paraíba:
+      gasoline: 6.05
+      gasoline_aditivada: 6.19
+      ethanol: 3.81
+    Paraná:
+      gasoline: 6.18
+      gasoline_aditivada: 6.32
+      ethanol: 3.83
+    Pernambuco:
+      gasoline: 5.86
+      gasoline_aditivada: 6.05
+      ethanol: 3.76
+    Piauí:
+      gasoline: 5.96
+      gasoline_aditivada: 6.18
+      ethanol: 3.70
+    Rio_de_Janeiro:
+      gasoline: 6.00
+      gasoline_aditivada: 6.21
+      ethanol: 3.85

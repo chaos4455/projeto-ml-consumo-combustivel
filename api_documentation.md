@@ -54,7 +54,7 @@ Esta API permite prever o consumo de combustível com base na distância percorr
 
 **Método:** `POST`
 
-**Descrição:** Prediz o consumo de combustível para um lote de entradas.
+**Descrição:** Prediz o consumo de combustível para um lote de entradas.  Considera agora velocidade, carga e temperatura.
 
 **Requisição:**
 
@@ -81,14 +81,12 @@ Esta API permite prever o consumo de combustível com base na distância percorr
     {
       "vehicle_type": "carro",
       "distance": 100.0,
-      "predicted_consumption": 8.33,
-      "units": "litros"
+      "predicted_consumption": 8.33
     },
     {
       "vehicle_type": "moto",
       "distance": 200.0,
-      "predicted_consumption": 8.00,
-      "units": "litros"
+      "predicted_consumption": 8.00
     }
   ]
 }
@@ -117,12 +115,53 @@ Esta API permite prever o consumo de combustível com base na distância percorr
 }
 ```
 
+### `/fuel_prices`
+
+**Método:** `GET`
+
+**Descrição:** Retorna os preços atuais dos combustíveis.
+
+**Resposta:**
+
+```json
+{
+  "diesel": 6.25,
+  "timestamp": "2024-11-05T16:48:00.000Z"
+}
+```
+
+### `/routes/consumption`
+
+**Método:** `GET`
+
+**Descrição:** Retorna o consumo previsto para rotas específicas.
+
+**Resposta:**
+
+```json
+[
+  {
+    "route": "curitiba",
+    "consumption": 12.5,
+    "distance": 428,
+    "via": "BR-376"
+  },
+  {
+    "route": "saopaulo",
+    "consumption": 20.2,
+    "distance": 674,
+    "via": "BR-376/BR-116"
+  },
+  // ... outras rotas
+]
+```
+
 
 ## Documentação dos Scripts Python
 
 ### `api_fuel_consumption.py`
 
-Implementa a API FastAPI para previsão de consumo de combustível.  Inclui endpoints para previsões individuais e em lote, tratamento de erros e um painel de monitoramento.
+Implementa a API FastAPI para previsão de consumo de combustível.  Inclui endpoints para previsões individuais e em lote, tratamento de erros, um painel de monitoramento e endpoints para preços de combustível e consumo em rotas.
 
 ### `predict_fuel_consumption.py`
 
@@ -158,3 +197,12 @@ Normaliza os dados do dataset usando MinMaxScaler.
 
 
 🎉  Espero que esta API seja útil!  🎉
+
+## Histórico de Versões
+
+### v0004 (05/11/2024 16:48 - Elias Andrade)
+
+* 📝 Melhorias na documentação.
+* 🐛 Correções de bugs.
+* ✨ Novas funcionalidades: endpoints para preços de combustível e consumo em rotas.
+* ✨ Melhorias no endpoint de previsão em lote: agora considera velocidade, carga e temperatura.
