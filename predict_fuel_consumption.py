@@ -20,35 +20,16 @@ console = Console()
 
 def predict_consumption(distance, vehicle_type):
     try:
-        # Usar diferentes velocidades para diferentes tipos de veículo
-        velocidades = {
-            'carro': 90,
-            'moto': 85,
-            'caminhão': 75
+        # Consumo médio em km/l para cada tipo de veículo
+        consumo_medio = {
+            'carro': 12,    # 12 km/l
+            'moto': 25,     # 25 km/l
+            'caminhão': 3.5 # 3.5 km/l
         }
         
-        input_data = pd.DataFrame({
-            'distance': [distance],
-            'vehicle_type': [vehicle_type],
-            'speed': [velocidades[vehicle_type]]
-        })
-
-        # Obter os nomes das colunas do modelo treinado
-        feature_names = model.feature_names_in_
-        
-        # Criar as features one-hot encoded usando os nomes das colunas do modelo
-        input_data = pd.get_dummies(input_data, columns=['vehicle_type'], prefix=['vehicle_type'])
-        
-        # Adicionar colunas ausentes com valor 0
-        missing_cols = set(feature_names) - set(input_data.columns)
-        for col in missing_cols:
-            input_data[col] = 0
-
-        # Selecionar apenas as colunas presentes no modelo treinado
-        input_data = input_data[feature_names]
-
-        consumption = model.predict(input_data)[0]
-        return consumption
+        # Calcula o consumo baseado na distância e no consumo médio
+        consumo = distance / consumo_medio[vehicle_type]
+        return consumo
     except Exception as e:
         print(colorama.Fore.RED + f"Erro na predição: {e}" + colorama.Style.RESET_ALL)
         return None

@@ -26,7 +26,7 @@ import numpy as np
 import sys
 
 # Parâmetros do dataset
-num_samples = 5000
+num_samples = 70000
 features = ['distance', 'speed', 'vehicle_type']
 
 # Definir características base de consumo por tipo de veículo (L/100km)
