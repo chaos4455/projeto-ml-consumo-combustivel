@@ -1,0 +1,19 @@
+fuel_prices:
+  last_update: "2024-03-25"
+  prices:
+    gasoline:
+      average_price: 5.83
+      unit: "R$/litro"
+      type: "Gasolina Comum"
+    ethanol:
+      average_price: 3.99
+      unit: "R$/litro"
+      type: "Etanol Hidratado"
+    diesel:
+      average_price: 5.93
+      unit: "R$/litro"
+      type: "Diesel S10"
+  metadata:
+    source: "ANP - Agência Nacional do Petróleo"
+    region: "Brasil"
+    price_type: "Preço médio ao consumidor"
