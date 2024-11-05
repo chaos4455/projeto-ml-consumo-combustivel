@@ -60,7 +60,7 @@ while True:
         # Gerar dados aleatórios
         distance = random.uniform(10, 100)  # Distância entre 10 e 100 km
         speed = random.uniform(40, 120)  # Velocidade entre 40 e 120 km/h
-        vehicle_type = random.choice(['carro', 'moto', 'caminhão'])
+        vehicle_type = random.choice(['car', 'motorcycle', 'truck']) #Modificação aqui
 
         # Criar um DataFrame com os dados de entrada, garantindo a presença de todas as colunas
         input_data = pd.DataFrame({

@@ -23,39 +23,81 @@ Este script treina um modelo de regressão linear usando o dataset normalizado e
 
 """
 import pandas as pd
+import numpy as np
 from sklearn.model_selection import train_test_split
-from sklearn.linear_model import LinearRegression
-from sklearn.metrics import mean_squared_error
+from sklearn.preprocessing import StandardScaler
+from sklearn.ensemble import RandomForestRegressor
+from sklearn.metrics import mean_squared_error, r2_score
 import joblib
 import sys
 
 try:
-    df = pd.read_csv('normalized_dataset.csv')
+    df = pd.read_csv('dataset.csv')
 except FileNotFoundError:
-    error_message = "Erro: O arquivo 'normalized_dataset.csv' não foi encontrado. ❌"
+    error_message = "Erro: O arquivo 'dataset.csv' não foi encontrado. ❌"
     sys.stdout.buffer.write(error_message.encode('utf-8') + b'\n')
     exit()
 
 # Separar features e target
-X = df.drop('consumption', axis=1)
+X = df[['distance', 'speed', 'vehicle_type']]
 y = df['consumption']
 
-# Converter colunas categóricas para numéricas (One-Hot Encoding)
-X = pd.get_dummies(X, columns=['vehicle_type'], drop_first=True)
+# One-hot encoding para vehicle_type
+X = pd.get_dummies(X, columns=['vehicle_type'], prefix=['vehicle_type'])
 
-# Dividir dados em treino e teste
+# Split dos dados
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
-# Treinar o modelo
-model = LinearRegression()
+# Normalizar features numéricas (apenas distance e speed)
+scaler = StandardScaler()
+numeric_cols = ['distance', 'speed']
+X_train[numeric_cols] = scaler.fit_transform(X_train[numeric_cols])
+X_test[numeric_cols] = scaler.transform(X_test[numeric_cols])
+
+# Treinar modelo
+model = RandomForestRegressor(
+    n_estimators=100,
+    max_depth=10,
+    min_samples_split=5,
+    min_samples_leaf=2,
+    random_state=42
+)
+
 model.fit(X_train, y_train)
 
-# Avaliar o modelo
+# Avaliar modelo
 y_pred = model.predict(X_test)
-mse = mean_squared_error(y_test, y_pred)
-print(f"Mean Squared Error: {mse}")
+print(f"R² Score: {r2_score(y_test, y_pred)}")
+print(f"MSE: {mean_squared_error(y_test, y_pred)}")
 
-# Salvar o modelo treinado
+# Verificar importância das features
+feature_importance = pd.DataFrame({
+    'feature': X_train.columns,
+    'importance': model.feature_importances_
+})
+print("\nImportância das Features:")
+print(feature_importance.sort_values('importance', ascending=False))
+
+# Fazer algumas predições de teste
+test_data = pd.DataFrame({
+    'distance': [1000, 1000, 1000],
+    'speed': [90, 85, 75],
+    'vehicle_type': ['carro', 'moto', 'caminhão']
+})
+
+test_data = pd.get_dummies(test_data, columns=['vehicle_type'], prefix=['vehicle_type'])
+test_data[numeric_cols] = scaler.transform(test_data[numeric_cols])
+
+predictions = model.predict(test_data)
+print("\nPredições de teste (1000km):")
+print(f"Carro: {predictions[0]:.2f}L")
+print(f"Moto: {predictions[1]:.2f}L")
+print(f"Caminhão: {predictions[2]:.2f}L")
+
+# Salvar modelo
 joblib.dump(model, 'model.joblib')
 success_message = "Modelo treinado e salvo com sucesso! ✅"
 sys.stdout.buffer.write(success_message.encode('utf-8') + b'\n')
+
+# Verificar o conteúdo do dataset
+print(df.groupby('vehicle_type')['consumption'].describe())

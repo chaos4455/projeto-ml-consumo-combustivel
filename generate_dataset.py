@@ -26,16 +26,45 @@ import numpy as np
 import sys
 
 # Parâmetros do dataset
-num_samples = 1000
+num_samples = 5000
 features = ['distance', 'speed', 'vehicle_type']
+
+# Definir características base de consumo por tipo de veículo (L/100km)
+consumo_base = {
+    'carro': {'urbano': 12, 'estrada': 9},
+    'moto': {'urbano': 6, 'estrada': 4},
+    'caminhão': {'urbano': 35, 'estrada': 28}
+}
 
 # Gerar dados sintéticos
 data = {
     'distance': np.random.randint(10, 1000, num_samples),
     'speed': np.random.randint(30, 120, num_samples),
-    'vehicle_type': np.random.choice(['carro', 'moto', 'caminhão'], num_samples),
-    'consumption': np.random.randint(5, 50, num_samples) # Placeholder
+    'vehicle_type': np.random.choice(['carro', 'moto', 'caminhão'], num_samples)
 }
+
+# Calcular consumo realista
+consumos = []
+for i in range(num_samples):
+    veiculo = data['vehicle_type'][i]
+    velocidade = data['speed'][i]
+    distancia = data['distance'][i]
+    
+    # Determinar se é condição urbana ou estrada baseado na velocidade
+    is_urbano = velocidade < 80
+    
+    # Selecionar consumo base apropriado
+    consumo_ref = consumo_base[veiculo]['urbano'] if is_urbano else consumo_base[veiculo]['estrada']
+    
+    # Fatores que afetam o consumo
+    fator_velocidade = 1.0 + (velocidade - 60) * 0.008  # Aumentado o impacto da velocidade
+    fator_aleatorio = np.random.uniform(0.9, 1.1)  # Variação de ±10% para outros fatores
+    
+    # Calcular consumo final
+    consumo = (distancia / 100) * consumo_ref * fator_velocidade * fator_aleatorio
+    consumos.append(round(consumo, 2))
+
+data['consumption'] = consumos
 
 df = pd.DataFrame(data)
 df.to_csv('dataset.csv', index=False)
