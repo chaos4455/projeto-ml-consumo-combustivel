@@ -5,8 +5,8 @@ Este projeto utiliza aprendizado de máquina para prever o consumo de combustív
 ## Contato
 
 🏠 Localização: Maringá, Paraná, Brasil
-📞 Telefone: +55 (44) 98765-4321
-📧 E-mail: elias.andrade@email.com
+📞 Telefone: +55 (44) 98859-7116
+📧 E-mail: oeliasandrade @email.com
 
 ## Descrição do Projeto
 
@@ -462,6 +462,7 @@ O script `predict_consumption.py` utiliza o modelo treinado para gerar previsõe
 * `README.md`: Este arquivo.
 * `combined_documentation.md`: Documentação combinada.
 * `model_architecture.md`: Arquitetura do modelo.
+* `api_documentation.md`: Documentação da API
 
 
 ## Como Executar
@@ -526,3 +527,7 @@ CMD ["python", "predict_consumption.py"]
 ### Terraform e Kubernetes
 
 As configurações para Terraform e Kubernetes são mais complexas e dependem da sua infraestrutura específica.  Você precisará criar arquivos `.tf` e arquivos de configuração Kubernetes (deployments, services, etc.) de acordo com suas necessidades.
+
+## API Documentation
+
+For detailed API documentation, please refer to: [api_documentation.md](api_documentation.md)
