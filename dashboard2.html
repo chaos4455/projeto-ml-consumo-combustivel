@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Histórico de Consumo</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/moment@2.29.4/moment.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-moment@1.0.1/dist/chartjs-adapter-moment.min.js"></script>
+    
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        dark: {
+                            100: '#1a1a1a',
+                            200: '#2d2d2d'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-gray-100 dark:bg-dark-100 transition-colors duration-200">
+    <!-- Header com Toggle de Tema -->
+    <div class="border-b dark:border-gray-700">
+        <div class="container mx-auto px-4 py-3 flex justify-between items-center">
+            <h1 class="text-xl font-bold text-gray-800 dark:text-gray-100">
+                🚗 Dashboard Histórico de Consumo
+            </h1>
+            <button id="theme-toggle" class="p-2 rounded-lg bg-gray-200 dark:bg-dark-200">
+                <svg class="w-6 h-6 text-gray-800 dark:text-gray-100" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path class="dark:hidden" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path>
+                    <path class="hidden dark:block" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path>
+                </svg>
+            </button>
+        </div>
+    </div>
+
+    <div class="container mx-auto px-4 py-8">
+        <!-- Cards de Métricas -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+            <!-- Consumo Total -->
+            <div class="bg-white dark:bg-dark-200 rounded-lg shadow-lg p-6">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-lg font-semibold text-gray-800 dark:text-gray-100">⛽ Consumo Total</h3>
+                    <span class="text-2xl font-bold text-blue-500" id="consumo-total">--</span>
+                </div>
+                <p class="text-sm text-gray-600 dark:text-gray-400">Últimas 24 horas</p>
+            </div>
+
+            <!-- Média por Veículo -->
+            <div class="bg-white dark:bg-dark-200 rounded-lg shadow-lg p-6">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-lg font-semibold text-gray-800 dark:text-gray-100">🚗 Média por Veículo</h3>
+                    <span class="text-2xl font-bold text-green-500" id="media-veiculo">--</span>
+                </div>
+                <p class="text-sm text-gray-600 dark:text-gray-400">Litros/100km</p>
+            </div>
+
+            <!-- Pico de Consumo -->
+            <div class="bg-white dark:bg-dark-200 rounded-lg shadow-lg p-6">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-lg font-semibold text-gray-800 dark:text-gray-100">📈 Pico de Consumo</h3>
+                    <span class="text-2xl font-bold text-red-500" id="pico-consumo">--</span>
+                </div>
+                <p class="text-sm text-gray-600 dark:text-gray-400">Maior valor registrado</p>
+            </div>
+
+            <!-- Economia Estimada -->
+            <div class="bg-white dark:bg-dark-200 rounded-lg shadow-lg p-6">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-lg font-semibold text-gray-800 dark:text-gray-100">💰 Economia</h3>
+                    <span class="text-2xl font-bold text-purple-500" id="economia">--</span>
+                </div>
+                <p class="text-sm text-gray-600 dark:text-gray-400">vs. média histórica</p>
+            </div>
+        </div>
+
+        <!-- Novos Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+            <!-- Eficiência Energética -->
+            <div class="bg-white dark:bg-dark-200 rounded-lg shadow-lg p-6">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-lg font-semibold text-gray-800 dark:text-gray-100">⚡ Eficiência</h3>
+                    <span class="text-2xl font-bold text-yellow-500" id="eficiencia">--</span>
+                </div>
+                <p class="text-sm text-gray-600 dark:text-gray-400">km/L médio</p>
+            </div>
+
+            <!-- Economia de CO2 -->
+            <div class="bg-white dark:bg-dark-200 rounded-lg shadow-lg p-6">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-lg font-semibold text-gray-800 dark:text-gray-100">🌱 CO2 Reduzido</h3>
+                    <span class="text-2xl font-bold text-green-500" id="co2-reduzido">--</span>
+                </div>
+                <p class="text-sm text-gray-600 dark:text-gray-400">kg CO2 evitados</p>
+            </div>
+
+            <!-- Previsão 24h -->
+            <div class="bg-white dark:bg-dark-200 rounded-lg shadow-lg p-6">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-lg font-semibold text-gray-800 dark:text-gray-100">🔮 Previsão 24h</h3>
+                    <span class="text-2xl font-bold text-indigo-500" id="previsao">--</span>
+                </div>
+                <p class="text-sm text-gray-600 dark:text-gray-400">Consumo previsto</p>
+            </div>
+
+            <!-- Custo Estimado -->
+            <div class="bg-white dark:bg-dark-200 rounded-lg shadow-lg p-6">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-lg font-semibold text-gray-800 dark:text-gray-100">💵 Custo</h3>
+                    <span class="text-2xl font-bold text-orange-500" id="custo">--</span>
+                </div>
+                <p class="text-sm text-gray-600 dark:text-gray-400">Valor estimado</p>
+            </div>
+
+            <!-- Tempo em Operação -->
+            <div class="bg-white dark:bg-dark-200 rounded-lg shadow-lg p-6">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-lg font-semibold text-gray-800 dark:text-gray-100">⏱️ Uptime</h3>
+                    <span class="text-2xl font-bold text-blue-500" id="uptime">--</span>
+                </div>
+                <p class="text-sm text-gray-600 dark:text-gray-400">Tempo de operação</p>
+            </div>
+
+            <!-- Alertas Ativos -->
+            <div class="bg-white dark:bg-dark-200 rounded-lg shadow-lg p-6">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-lg font-semibold text-gray-800 dark:text-gray-100">🚨 Alertas</h3>
+                    <span class="text-2xl font-bold text-red-500" id="alertas">--</span>
+                </div>
+                <p class="text-sm text-gray-600 dark:text-gray-400">Alertas ativos</p>
+            </div>
+
+            <!-- Manutenções Previstas -->
+            <div class="bg-white dark:bg-dark-200 rounded-lg shadow-lg p-6">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-lg font-semibold text-gray-800 dark:text-gray-100">🔧 Manutenções</h3>
+                    <span class="text-2xl font-bold text-purple-500" id="manutencoes">--</span>
+                </div>
+                <p class="text-sm text-gray-600 dark:text-gray-400">Próximas 24h</p>
+            </div>
+        </div>
+
+        <!-- Gráficos Principais -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+            <!-- Gráfico Histórico de Consumo por Tipo -->
+            <div class="bg-white dark:bg-dark-200 rounded-lg shadow-lg p-6">
+                <h3 class="text-xl font-semibold text-gray-800 dark:text-gray-100 mb-4">
+                    📊 Histórico de Consumo por Tipo
+                </h3>
+                <div class="relative h-[400px]">
+                    <canvas id="historicoConsumoChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Gráfico de Variação Histórica -->
+            <div class="bg-white dark:bg-dark-200 rounded-lg shadow-lg p-6">
+                <h3 class="text-xl font-semibold text-gray-800 dark:text-gray-100 mb-4">
+                    📈 Variação do Consumo Médio
+                </h3>
+                <div class="relative h-[400px]">
+                    <canvas id="variacaoHistoricaChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Gráficos Adicionais -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <!-- Gráfico de Distribuição -->
+            <div class="bg-white dark:bg-dark-200 rounded-lg shadow-lg p-6">
+                <h3 class="text-xl font-semibold text-gray-800 dark:text-gray-100 mb-4">
+                    🎯 Distribuição de Consumo
+                </h3>
+                <div class="relative h-[300px]">
+                    <canvas id="distribuicaoChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Gráfico de Tendência -->
+            <div class="bg-white dark:bg-dark-200 rounded-lg shadow-lg p-6">
+                <h3 class="text-xl font-semibold text-gray-800 dark:text-gray-100 mb-4">
+                    📉 Tendência de Consumo
+                </h3>
+                <div class="relative h-[300px]">
+                    <canvas id="tendenciaChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Configuração do tema
+        const themeToggle = document.getElementById('theme-toggle');
+        themeToggle.addEventListener('click', () => {
+            document.documentElement.classList.toggle('dark');
+            updateChartsTheme();
+        });
+
+        const COLLECTOR_API_URL = 'http://localhost:8001';
+        const TIMEFRAME_MINUTES = 10;
+
+        // Configuração comum dos gráficos
+        const commonOptions = {
+            responsive: true,
+            maintainAspectRatio: false,
+            animation: {
+                duration: 300
+            },
+            scales: {
+                x: {
+                    type: 'time',
+                    time: {
+                        unit: 'minute',
+                        displayFormats: {
+                            minute: 'HH:mm:ss'
+                        }
+                    },
+                    grid: {
+                        color: 'rgba(128, 128, 128, 0.1)'
+                    }
+                },
+                y: {
+                    beginAtZero: true,
+                    grid: {
+                        color: 'rgba(128, 128, 128, 0.1)'
+                    }
+                }
+            },
+            plugins: {
+                legend: {
+                    labels: {
+                        color: document.documentElement.classList.contains('dark') ? '#fff' : '#666'
+                    }
+                }
+            }
+        };
+
+        // Criar gráficos
+        const historicoConsumoChart = new Chart(
+            document.getElementById('historicoConsumoChart'),
+            {
+                type: 'line',
+                data: {
+                    datasets: [
+                        {
+                            label: '🚗 Carro',
+                            borderColor: 'rgb(75, 192, 192)',
+                            tension: 0.4
+                        },
+                        {
+                            label: '🏍️ Moto',
+                            borderColor: 'rgb(255, 99, 132)',
+                            tension: 0.4
+                        },
+                        {
+                            label: '🚛 Caminhão',
+                            borderColor: 'rgb(153, 102, 255)',
+                            tension: 0.4
+                        }
+                    ]
+                },
+                options: commonOptions
+            }
+        );
+
+        const variacaoHistoricaChart = new Chart(
+            document.getElementById('variacaoHistoricaChart'),
+            {
+                type: 'line',
+                data: {
+                    datasets: [{
+                        label: '📊 Consumo Médio',
+                        borderColor: 'rgb(54, 162, 235)',
+                        backgroundColor: 'rgba(54, 162, 235, 0.1)',
+                        fill: true,
+                        tension: 0.4
+                    }]
+                },
+                options: commonOptions
+            }
+        );
+
+        // Gráfico de Distribuição
+        const distribuicaoChart = new Chart(
+            document.getElementById('distribuicaoChart'),
+            {
+                type: 'bar',
+                data: {
+                    labels: ['🚗 Carro', '🏍️ Moto', '🚛 Caminhão'],
+                    datasets: [{
+                        label: 'Distribuição do Consumo',
+                        backgroundColor: [
+                            'rgba(75, 192, 192, 0.8)',
+                            'rgba(255, 99, 132, 0.8)',
+                            'rgba(153, 102, 255, 0.8)'
+                        ],
+                        data: [0, 0, 0]
+                    }]
+                },
+                options: {
+                    ...commonOptions,
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            }
+        );
+
+        // Gráfico de Tendência
+        const tendenciaChart = new Chart(
+            document.getElementById('tendenciaChart'),
+            {
+                type: 'line',
+                data: {
+                    datasets: [{
+                        label: '📈 Tendência',
+                        borderColor: 'rgb(255, 159, 64)',
+                        backgroundColor: 'rgba(255, 159, 64, 0.1)',
+                        fill: true,
+                        tension: 0.4
+                    }]
+                },
+                options: commonOptions
+            }
+        );
+
+        // Função para atualizar os gráficos
+        async function updateCharts() {
+            try {
+                // Buscar dados de consumo médio
+                const consumoResponse = await axios.get(
+                    `${COLLECTOR_API_URL}/consumo-medio/${TIMEFRAME_MINUTES}`
+                );
+                
+                // Atualizar gráfico de histórico
+                historicoConsumoChart.data.labels = consumoResponse.data.labels;
+                historicoConsumoChart.data.datasets.forEach((dataset, index) => {
+                    dataset.data = consumoResponse.data.datasets[index].data;
+                });
+                historicoConsumoChart.update('none');
+
+                // Buscar dados de variação
+                const variacaoResponse = await axios.get(
+                    `${COLLECTOR_API_URL}/variacao-consumo/${TIMEFRAME_MINUTES}`
+                );
+                
+                // Atualizar gráfico de variação
+                variacaoHistoricaChart.data.labels = variacaoResponse.data.labels;
+                variacaoHistoricaChart.data.datasets[0].data = variacaoResponse.data.data;
+                variacaoHistoricaChart.update('none');
+
+                // Atualizar gráfico de distribuição
+                const ultimosValores = consumoResponse.data.datasets.map(ds => {
+                    const valores = ds.data;
+                    return valores[valores.length - 1] || 0;
+                });
+                distribuicaoChart.data.datasets[0].data = ultimosValores;
+                distribuicaoChart.update('none');
+
+                // Atualizar gráfico de tendência
+                tendenciaChart.data.labels = variacaoResponse.data.labels;
+                tendenciaChart.data.datasets[0].data = variacaoResponse.data.data;
+                tendenciaChart.update('none');
+
+                // Atualizar cards de métricas
+                updateMetricsCards(consumoResponse.data, variacaoResponse.data);
+
+            } catch (error) {
+                console.error('Erro ao atualizar gráficos:', error);
+            }
+        }
+
+        // Função para atualizar cards de métricas
+        function updateMetricsCards(consumoData, variacaoData) {
+            // Consumo total
+            const consumoTotal = consumoData.datasets.reduce((total, ds) => {
+                const ultimoValor = ds.data[ds.data.length - 1] || 0;
+                return total + ultimoValor;
+            }, 0);
+            document.getElementById('consumo-total').textContent = 
+                `${consumoTotal.toFixed(1)}L`;
+
+            // Média por veículo
+            const mediaVeiculo = consumoTotal / 3;
+            document.getElementById('media-veiculo').textContent = 
+                `${mediaVeiculo.toFixed(1)}L`;
+
+            // Pico de consumo
+            const picoConsumo = Math.max(...variacaoData.data);
+            document.getElementById('pico-consumo').textContent = 
+                `${picoConsumo.toFixed(1)}L`;
+
+            // Economia estimada
+            const mediaHistorica = variacaoData.data.reduce((a, b) => a + b, 0) / 
+                                 variacaoData.data.length;
+            const economia = ((mediaHistorica - mediaVeiculo) / mediaHistorica) * 100;
+            document.getElementById('economia').textContent = 
+                `${economia > 0 ? '+' : ''}${economia.toFixed(1)}%`;
+        }
+
+        // Função para atualizar tema dos gráficos
+        function updateChartsTheme() {
+            const isDark = document.documentElement.classList.contains('dark');
+            const textColor = isDark ? '#fff' : '#666';
+            const gridColor = isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)';
+
+            [historicoConsumoChart, variacaoHistoricaChart, distribuicaoChart, tendenciaChart]
+                .forEach(chart => {
+                    chart.options.plugins.legend.labels.color = textColor;
+                    if (chart.options.scales.x) {
+                        chart.options.scales.x.grid.color = gridColor;
+                        chart.options.scales.x.ticks.color = textColor;
+                    }
+                    chart.options.scales.y.grid.color = gridColor;
+                    chart.options.scales.y.ticks.color = textColor;
+                    chart.update();
+                });
+        }
+
+        // Atualizar a cada 5 segundos
+        updateCharts();
+        setInterval(updateCharts, 5000);
+    </script>
+</body>
+</html> 

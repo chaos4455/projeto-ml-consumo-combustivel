@@ -1,4 +1,4 @@
-# Predição de Consumo de Combustível - Por Elias Andrade - v0.004
+# Predição de Consumo de Combustível - Por Elias Andrade - v0.005
 
 Este projeto utiliza aprendizado de máquina para prever o consumo de combustível.  Sou Elias Andrade, e desenvolvi este projeto como uma demonstração de minhas habilidades em IA e Machine Learning.
 
@@ -7,6 +7,10 @@ Este projeto utiliza aprendizado de máquina para prever o consumo de combustív
 * [Arquitetura do Modelo](model_architecture.md)
 * [Arquitetura da Rede](network_architecture.md)
 * [Arquitetura do Projeto](architecture.md)
+* [API Documentation](api_documentation.md)
+* [Changelog](changelog.md)
+* [Upgrade Guide v4 to v5](upgrade_v4_to_v5.md)
+* [Upgrade Guide v5 to v6](upgrade_v5_to_v6.md)
 
 
 ## Contato
@@ -17,7 +21,7 @@ Este projeto utiliza aprendizado de máquina para prever o consumo de combustív
 
 ## Descrição do Projeto
 
-Este projeto visa prever o consumo de combustível de veículos com base em diferentes parâmetros, utilizando técnicas de aprendizado de máquina.  O modelo foi treinado com um dataset sintético, gerado e normalizado para otimizar o desempenho do algoritmo.  A versão atual (v0.004) inclui melhorias na documentação, na clareza do código e instruções para configurar ações do GitHub, Docker, Terraform e Kubernetes.
+Este projeto visa prever o consumo de combustível de veículos com base em diferentes parâmetros, utilizando técnicas de aprendizado de máquina.  O modelo foi treinado com um dataset sintético, gerado e normalizado para otimizar o desempenho do algoritmo.  A versão atual (v0.005) inclui melhorias na documentação, na clareza do código e instruções para configurar ações do GitHub, Docker, Terraform e Kubernetes.
 
 # Documentação Combinada do Projeto de Previsão de Consumo de Combustível
 
@@ -471,6 +475,10 @@ O script `predict_consumption.py` utiliza o modelo treinado para gerar previsõe
 * `model_architecture.md`: Arquitetura do modelo.
 * `network_architecture.md`: Arquitetura da rede.
 * `architecture.md`: Arquitetura do projeto.
+* `api_documentation.md`: API Documentation
+* `changelog.md`: Changelog
+* `upgrade_v4_to_v5.md`: Upgrade Guide v4 to v5
+* `upgrade_v5_to_v6.md`: Upgrade Guide v5 to v6
 
 
 ## Como Executar
@@ -536,13 +544,17 @@ CMD ["python", "predict_consumption.py"]
 
 As configurações para Terraform e Kubernetes são mais complexas e dependem da sua infraestrutura específica.  Você precisará criar arquivos `.tf` e arquivos de configuração Kubernetes (deployments, services, etc.) de acordo com suas necessidades.
 
-## API Documentation
+## Related Documents
 
-For detailed API documentation, please refer to: [api_documentation.md](api_documentation.md)
+* [api_documentation.md](api_documentation.md)
+* [changelog.md](changelog.md)
+* [upgrade_v4_to_v5.md](upgrade_v4_to_v5.md)
+* [upgrade_v5_to_v6.md](upgrade_v5_to_v6.md)
+
 
 ## Histórico de Versões
 
-### v0004 (05/11/2024 16:48 - Elias Andrade)
+### v0005 (05/11/2024 16:48 - Elias Andrade)
 
 * 📝 Melhorias na documentação.
 * 🐛 Correções de bugs.

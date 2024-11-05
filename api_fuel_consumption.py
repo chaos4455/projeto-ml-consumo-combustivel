@@ -20,7 +20,7 @@ import random  # Adicione no topo do arquivo
 
 # Inicialização
 console = Console()
-app = FastAPI(title="API de Consumo de Combustível", version="1.0.0")
+app = FastAPI(title="API de Consumo de Combustível", version="1.1.0") # Updated version here
 
 # Configuração CORS
 app.add_middleware(
@@ -115,7 +115,7 @@ dashboard_thread.start()
 @app.get("/")
 async def root():
     metrics.total_requests += 1
-    return {"message": "API de Previsão de Consumo de Combustível v1.0"}
+    return {"message": "API de Previsão de Consumo de Combustível v1.1"} # Updated version here
 
 @app.post("/predict/single")
 async def predict_single(request: PredictionRequest):

@@ -10,7 +10,17 @@ O modelo foi treinado utilizando um dataset sintético gerado pelo script `gener
 * **speed:** Velocidade média (km/h) 💨 - Numérica.
 * **vehicle_type:** Tipo de veículo (carro 🚗, moto 🏍️, caminhão 🚚) - Categórica.
 
-O dataset original (`dataset.csv`) foi normalizado usando `MinMaxScaler` do scikit-learn, resultando no arquivo `normalized_dataset.csv`.  A normalização foi aplicada às colunas 'distance', 'speed' e 'consumption'.
+O dataset original (`dataset.csv`) foi normalizado usando `MinMaxScaler` do scikit-learn, resultando no arquivo `normalized_dataset.csv`.  A normalização foi aplicada às colunas 'distance', 'speed' e 'consumption'.  A normalização utiliza a seguinte fórmula:
+
+**x' = (x - min(x)) / (max(x) - min(x))**
+
+Onde:
+
+* **x:** Valor original da feature
+* **x':** Valor normalizado da feature
+* **min(x):** Valor mínimo da feature no dataset
+* **max(x):** Valor máximo da feature no dataset
+
 
 ## Arquitetura do Modelo 🧠
 
@@ -27,9 +37,30 @@ Onde:
 * **β₁, β₂, ..., βₙ:** Coeficientes de regressão
 * **x₁, x₂, ..., xₙ:** Variáveis independentes (distance, speed, vehicle_type - one-hot encoded)
 
-O modelo aprende os coeficientes de regressão (β) que melhor se ajustam aos dados de treinamento, minimizando a soma dos quadrados dos erros (SSE).  O modelo treinado é salvo em `model.joblib`.
+O modelo aprende os coeficientes de regressão (β) que melhor se ajustam aos dados de treinamento, minimizando a soma dos quadrados dos erros (SSE).  A fórmula do SSE é:
+
+**SSE = Σ(yᵢ - ŷᵢ)²**
+
+Onde:
+
+* **yᵢ:** Valor real da variável dependente
+* **ŷᵢ:** Valor previsto da variável dependente
+
+O modelo treinado é salvo em `model.joblib`.
 
 ![Linear Regression Diagram](https://upload.wikimedia.org/wikipedia/commons/thumb/3/3a/Linear_regression.svg/1280px-Linear_regression.svg.png)
+
+
+## Melhorias com Redes Neurais
+
+Para melhorar a precisão do modelo, podemos explorar o uso de redes neurais.  Uma rede neural pode capturar relações não-lineares entre as variáveis, o que pode ser benéfico se a relação entre as variáveis de entrada e o consumo de combustível não for estritamente linear.  Uma arquitetura simples de rede neural para este problema poderia ser uma rede feedforward com uma ou mais camadas ocultas.  A função de ativação da camada de saída seria linear para prever o consumo de combustível.  A função de perda seria o Mean Squared Error (MSE).  O otimizador poderia ser o Adam ou o Gradient Descent.
+
+**Exemplo de arquitetura:**
+
+* Camada de entrada: 4 neurônios (distance, speed, vehicle_type_carro, vehicle_type_moto)
+* Camada oculta 1: 8 neurônios (função de ativação: ReLU)
+* Camada oculta 2: 4 neurônios (função de ativação: ReLU)
+* Camada de saída: 1 neurônio (função de ativação: linear)
 
 
 ## Saída do Modelo ⛽
@@ -70,7 +101,7 @@ Lembre-se que os valores de distância e velocidade devem ser normalizados antes
 
 ## Melhorias Futuras e Próximos Passos 💡
 
-* Explorar modelos de Machine Learning mais complexos, como redes neurais, para melhorar a precisão das previsões.
+* Implementar e avaliar uma rede neural para comparar o desempenho com a regressão linear.
 * Incluir mais features no dataset, como condições climáticas, tipo de combustível e terreno.
 * Desenvolver uma interface gráfica para facilitar o uso do modelo.
 
@@ -84,4 +115,4 @@ Basicamente, o modelo aprendeu a relação entre a distância percorrida, a velo
 ### v0005 (05/11/2024 17:48 - Cline)
 
 * 📝 Melhorias na documentação, incluindo fórmulas matemáticas e diagramas.
-* ✨ Adicionadas seções de melhorias futuras e próximos passos.
+* ✨ Adicionadas seções de melhorias futuras e próximos passos, incluindo a possibilidade de usar redes neurais.
