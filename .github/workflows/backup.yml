@@ -1,0 +1,19 @@
+name: Backup on Commit
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  backup:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Create backups directory
+        run: mkdir -p backups
+
+      - name: Zip project
+        run: zip -r backups/$(date +%Y%m%d_%H%M%S)_backup.zip .

@@ -1,0 +1,6 @@
+scikit-learn
+pandas
+numpy
+sys
+rich
+colorama

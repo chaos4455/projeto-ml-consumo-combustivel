@@ -24,6 +24,7 @@ from rich.console import Console
 from rich.progress import track
 import colorama
 from colorama import Fore, Style
+import sys
 
 colorama.init()
 console = Console()
@@ -31,7 +32,7 @@ console = Console()
 def run_script(script_path, description):
     try:
         with console.status(f"[bold green]Executando {description}...[/]") as status:
-            result = subprocess.run(['python', script_path], capture_output=True, text=True, check=True)
+            result = subprocess.run(['python', script_path], capture_output=True, text=True, check=True, encoding='utf-8') #encoding added here
             console.print(f"[bold green]{description} concluído com sucesso! ✅[/]")
             return result.stdout
     except subprocess.CalledProcessError as e:
