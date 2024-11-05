@@ -27,6 +27,36 @@ Este projeto visa prever o consumo de combustível de veículos com base em dife
 
 Este documento combina a documentação de todos os arquivos `.py` e `.md` do projeto.
 
+![Cursor_nKRsABIowS](https://github.com/user-attachments/assets/f6b6bf92-b2e2-484a-9000-ef5b37717f04)
+
+![Cursor_P16CMPLNGn](https://github.com/user-attachments/assets/11863853-768b-4117-8e2f-efe9ce141b97)
+
+![Cursor_r1sjgILvr4](https://github.com/user-attachments/assets/42658dc4-1e92-4b63-adab-a8a34eb6d369)
+
+![Cursor_se4ZbOt7tc](https://github.com/user-attachments/assets/40049814-5045-49e5-9ec0-6135bc8738cc)
+
+![Cursor_GuiTMTERFK](https://github.com/user-attachments/assets/7b1c43f1-8788-4d12-990a-3712d8741fa4)
+
+![Cursor_1Y5Ev4JoBb](https://github.com/user-attachments/assets/80cbcfdb-e9b9-4c6e-8c27-ac43287e129a)
+
+![Cursor_XXcwDW6ZtT](https://github.com/user-attachments/assets/7fbf7859-9b63-4148-9bb3-1171c11ba24d)
+
+![Cursor_LUrikXc6uP](https://github.com/user-attachments/assets/f0e95520-cb67-4969-8821-b7053dcbb30c)
+
+![Cursor_5OdhNtf9Ar](https://github.com/user-attachments/assets/61402e68-fef0-42b1-bfeb-a75020ce0128)
+
+![Cursor_kRk5nCen2X](https://github.com/user-attachments/assets/de99dbb5-f0e3-48a0-9b62-ed977e659289)
+
+![Cursor_IvLtNaijY0](https://github.com/user-attachments/assets/94d19a62-61b9-4ba3-b64d-016ee8ec330b)
+
+![screencapture-file-F-MEGASYNC-projeto-ml-consumo-combustivel-dashboard-html-2024-11-05-17_00_39](https://github.com/user-attachments/assets/32ff7aee-1775-4f62-9b27-b138e3a4542b)
+
+![screencapture-file-F-MEGASYNC-projeto-ml-consumo-combustivel-dashboard2-html-2024-11-05-17_21_40](https://github.com/user-attachments/assets/671deeb3-7a35-49bd-a72c-a2991eafcad4)
+
+![screencapture-file-F-MEGASYNC-projeto-ml-consumo-combustivel-dashboard2-html-2024-11-05-17_21_45](https://github.com/user-attachments/assets/f1c05374-84bc-463b-a623-0f8f6c175994)
+
+
+
 ## Arquitetura do Modelo
 
 ```
